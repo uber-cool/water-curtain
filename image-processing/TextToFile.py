@@ -9,12 +9,17 @@ def get_font_size(text, pixels):
     return int(1.5 * width_per_letter)
 
 
-def get_font_object(font_path, text, pixels):
-    approximate_font_size = get_font_size(text, pixels)
-    final_font_size = approximate_font_size
+def get_font_object(font_path, lines, pixels):
+    final_font_size = 100000
+    for text in lines:
+        approximate_font_size = get_font_size(text, pixels)
+        if approximate_font_size < final_font_size:
+            final_font_size = approximate_font_size
+            largest_line = text
+
     while True:
         font_object = ImageFont.truetype(font_path, final_font_size, encoding='unic')
-        get_length = font_object.getlength(text)
+        get_length = font_object.getlength(largest_line)
         if get_length < pixels:
             final_font_size += 1
         else:
@@ -24,13 +29,16 @@ def get_font_object(font_path, text, pixels):
     return font_object
 
 
-def add_text_to_file(text, target_file_path, pixels=(128, 128), font_file_path="fonts/BakbakOne-Regular.ttf"):
+def add_text_to_file(lines_to_show, target_file_path, pixels=128, font_file_path="fonts/BakbakOne-Regular.ttf"):
 
-    font = get_font_object(font_file_path, text, pixels[0])
-    blank_image = Image.new("RGB", (pixels[0], pixels[1]), (255, 255, 255))
+    font = get_font_object(font_file_path, lines_to_show, pixels)
+    joined_text = "\n".join(lines_to_show)
+
+    multiline = font.getsize_multiline(joined_text)
+    blank_image = Image.new("RGB", (pixels, multiline[1]), (255, 255, 255))
     blank_image.save("blank_image.png", "PNG")
 
     image_editable = ImageDraw.Draw(blank_image)
-    image_editable.text((0, 2), text, (0, 0, 0), font=font)
+    image_editable.text((0, 2), joined_text, (0, 0, 0), font=font, align="center")
     blank_image.save(target_file_path)
     return target_file_path
