@@ -39,6 +39,6 @@ def add_text_to_file(lines_to_show, target_file_path, pixels=128, font_file_path
     blank_image.save("blank_image.png", "PNG")
 
     image_editable = ImageDraw.Draw(blank_image)
-    image_editable.text((0, 2), joined_text, (0, 0, 0), font=font, align="center")
+    image_editable.text((0, 1), joined_text, (0, 0, 0), font=font, align="center")
     blank_image.save(target_file_path)
     return target_file_path
